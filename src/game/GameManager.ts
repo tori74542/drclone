@@ -52,7 +52,7 @@ export class GameManager {
             </div>
             <div class="stat-item attack">
                 <span class="label">ATK</span>
-                <span class="value" id="player-attack">${this.player.attack}</span>
+                <span class="value" id="player-attack">${this.player.baseAttack}</span>
             </div>
         </div>
         <div class="stats-row">
@@ -127,7 +127,7 @@ export class GameManager {
 
         if (hpEl) hpEl.textContent = `${this.player.currentHp}/${this.player.maxHp}`;
         if (defEl) defEl.textContent = `${this.player.currentDefense}/${this.player.maxDefense}`;
-        if (atkEl) atkEl.textContent = `${this.player.attack}`;
+        if (atkEl) atkEl.textContent = `${this.player.baseAttack}`;
         if (coinsEl) coinsEl.textContent = `${this.player.coins}`;
         if (eqEl) eqEl.textContent = `${this.player.equipmentPoints}`;
         if (expEl) expEl.textContent = `${this.player.experience}`;
@@ -419,13 +419,13 @@ export class GameManager {
     }
 
     calculateCombatResult(selectedTiles: Tile[]): { totalDamage: number, killedEnemies: Tile[] } {
-        let totalAttack = 0;
+        let swordCount = 0;
         const killedEnemies: Tile[] = [];
 
-        // 1. Calculate Total Attack
+        // 1. Calculate Sword Count
         selectedTiles.forEach(tile => {
             if (tile.type === TileType.Sword) {
-                totalAttack += 1;
+                swordCount += 1;
             }
         });
 
@@ -433,12 +433,9 @@ export class GameManager {
         selectedTiles.forEach(tile => {
             if (tile.type === TileType.Enemy) {
                 const defense = tile.stats?.defense || 0;
-                // If swords are present, damage = max(1, attack - defense)
-                // If NO swords, damage = max(1, 0 - defense) = 1 (min damage rule)
-                // Wait, if 0 attack and 5 defense, 0 - 5 = -5. Max(1, -5) = 1.
-                // So the formula is consistent: Math.max(1, totalAttack - defense).
-
-                const damage = Math.max(1, totalAttack - defense);
+                // Formula: BaseAttack + (SwordCount * WeaponAttack) - EnemyDefense
+                const rawDamage = this.player.baseAttack + (swordCount * this.player.weaponAttack);
+                const damage = Math.max(1, rawDamage - defense);
 
                 if (tile.stats && tile.stats.hp - damage <= 0) {
                     killedEnemies.push(tile);
@@ -446,7 +443,10 @@ export class GameManager {
             }
         });
 
-        return { totalDamage: totalAttack, killedEnemies };
+        // Total damage for display (approximate, as it varies per enemy due to defense)
+        // We'll return the raw damage potential for the indicator
+        const totalPotentialDamage = this.player.baseAttack + (swordCount * this.player.weaponAttack);
+        return { totalDamage: totalPotentialDamage, killedEnemies };
     }
 
     updateDamagePreview(selectedTiles: Tile[]) {
@@ -475,17 +475,17 @@ export class GameManager {
 
     processTurn(selectedTiles: Tile[]) {
         const tilesToRemove: Tile[] = [];
-        let totalAttack = 0;
+        let swordCount = 0;
 
         // Gains for this turn
         let gainedCoins = 0;
         let gainedEquipment = 0;
         let gainedExperience = 0;
 
-        // 1. Calculate Total Attack
+        // 1. Calculate Sword Count
         selectedTiles.forEach(tile => {
             if (tile.type === TileType.Sword) {
-                totalAttack += 1;
+                swordCount += 1;
                 tilesToRemove.push(tile);
             }
         });
@@ -494,7 +494,8 @@ export class GameManager {
         selectedTiles.forEach((tile, index) => {
             if (tile.type === TileType.Enemy) {
                 const defense = tile.stats?.defense || 0;
-                const damage = Math.max(1, totalAttack - defense);
+                const rawDamage = this.player.baseAttack + (swordCount * this.player.weaponAttack);
+                const damage = Math.max(1, rawDamage - defense);
 
                 if (tile.stats) {
                     tile.stats.hp -= damage;

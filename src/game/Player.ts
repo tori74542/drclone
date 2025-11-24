@@ -1,7 +1,8 @@
 export class Player {
     maxHp: number;
     currentHp: number;
-    attack: number;
+    baseAttack: number;
+    weaponAttack: number;
     maxDefense: number;
     currentDefense: number;
     coins: number;
@@ -23,7 +24,8 @@ export class Player {
     constructor() {
         this.maxHp = 100;
         this.currentHp = 99;
-        this.attack = 1;
+        this.baseAttack = 1;
+        this.weaponAttack = 1;
         this.maxDefense = 10;
         this.currentDefense = 9;
         this.coins = 0;
