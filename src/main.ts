@@ -5,4 +5,11 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div id="game-root"></div>
 `
 
-new GameManager('game-root')
+declare global {
+  interface Window {
+    gameManager: GameManager;
+  }
+}
+
+const gameManager = new GameManager('game-root')
+window.gameManager = gameManager;

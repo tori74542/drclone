@@ -20,6 +20,7 @@ export class Tile {
   x: number;
   y: number;
   isNew: boolean = true;
+  turnsAlive: number = 0;
   stats?: EnemyStats;
 
   constructor(x: number, y: number, type?: TileType) {
@@ -27,10 +28,11 @@ export class Tile {
     this.x = x;
     this.y = y;
     this.type = type || this.getRandomType();
+    this.turnsAlive = 0;
 
     if (this.type === TileType.Enemy) {
       this.stats = {
-        attack: 5 + Math.floor(Math.random() * 3) - 1, // 5 +/- 1 (4, 5, 6) for debug
+        attack: 2 + Math.floor(Math.random() * 3) - 1, // 2 +/- 1 (1, 2, 3) for debug
         defense: 0, // Debug: set to 0 to test kill mark
         hp: 3 + Math.floor(Math.random() * 3) - 1 // 3 +/- 1 (2, 3, 4) for debug
       };

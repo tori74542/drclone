@@ -177,35 +177,49 @@ export class GameManager {
         this.renderSelection(selectedTiles);
         this.updateDamagePreview(selectedTiles);
     }
+
     onSelectionEnd(selectedTiles: Tile[]) {
         if (selectedTiles.length >= 3) {
             this.isProcessing = true; // Start blocking
+
+            // Increment turnsAlive for all EXISTING tiles (before processing turn)
+            for (let y = 0; y < this.grid.height; y++) {
+                for (let x = 0; x < this.grid.width; x++) {
+                    const tile = this.grid.getTile(x, y);
+                    if (tile) {
+                        tile.turnsAlive++;
+                    }
+                }
+            }
 
             // Combat Logic
             this.processTurn(selectedTiles);
 
             // Enemy Attack Logic (Turn-Based)
-            // Iterate through all tiles to find surviving enemies
+            let totalEnemyAttack = 0;
+            let attackingEnemyCount = 0;
+
+            // Iterate through all tiles to find surviving enemies that are NOT new (turnsAlive >= 1)
             for (let y = 0; y < this.grid.height; y++) {
                 for (let x = 0; x < this.grid.width; x++) {
                     const tile = this.grid.getTile(x, y);
-                    if (tile && tile.type === TileType.Enemy && !tile.isNew) {
-                        // It's a surviving enemy
-                        const enemyAttack = tile.stats?.attack || 0;
-                        const playerDefense = this.player.currentDefense;
-
-                        // Calculate damage: max(0, Enemy Attack - Player Defense)
-                        const damage = Math.max(0, enemyAttack - playerDefense);
-
-                        // Apply damage
-                        this.player.currentHp = Math.max(0, this.player.currentHp - damage);
-
-                        // Degrade defense
-                        if (this.player.currentDefense > 0) {
-                            this.player.currentDefense -= 1;
-                        }
+                    if (tile && tile.type === TileType.Enemy && tile.turnsAlive >= 1) {
+                        // It's a surviving, non-new enemy
+                        totalEnemyAttack += tile.stats?.attack || 0;
+                        attackingEnemyCount++;
                     }
                 }
+            }
+
+            // Calculate damage: max(0, Total Enemy Attack - Player Defense)
+            const damage = Math.max(0, totalEnemyAttack - this.player.currentDefense);
+
+            // Apply damage
+            this.player.currentHp = Math.max(0, this.player.currentHp - damage);
+
+            // Degrade defense by number of attacking enemies
+            if (this.player.currentDefense > 0 && attackingEnemyCount > 0) {
+                this.player.currentDefense = Math.max(0, this.player.currentDefense - attackingEnemyCount);
             }
 
             // Check for Game Over
@@ -433,6 +447,11 @@ export class GameManager {
         const tilesToRemove: Tile[] = [];
         let totalAttack = 0;
 
+        // Gains for this turn
+        let gainedCoins = 0;
+        let gainedEquipment = 0;
+        let gainedExperience = 0;
+
         // 1. Calculate Total Attack
         selectedTiles.forEach(tile => {
             if (tile.type === TileType.Sword) {
@@ -451,10 +470,8 @@ export class GameManager {
                     tile.stats.hp -= damage;
                     if (tile.stats.hp <= 0) {
                         tilesToRemove.push(tile);
-                        this.player.experience += 1;
-                        // Score for kill: 10 * maxHp (approx difficulty)
-                        this.player.score += (tile.stats.hp + damage) * 10; // Use original HP or just damage dealt? Let's use maxHp estimate or just constant
-                        // Better: 50 points per kill + bonus
+                        gainedExperience += 1;
+                        // Score for kill: 50 points per kill
                         this.player.score += 50;
                     }
                 }
@@ -463,7 +480,7 @@ export class GameManager {
 
                 // Resources
                 if (tile.type === TileType.Coin) {
-                    this.player.coins += 1;
+                    gainedCoins += 1;
                     this.player.score += 10; // 10 points per coin
                 }
                 if (tile.type === TileType.Potion) this.player.currentHp = Math.min(this.player.maxHp, this.player.currentHp + 1);
@@ -471,11 +488,16 @@ export class GameManager {
                     if (this.player.currentDefense < this.player.maxDefense) {
                         this.player.currentDefense += 1;
                     } else {
-                        this.player.equipmentPoints += 1;
+                        gainedEquipment += 1;
                     }
                 }
             }
         });
+
+        // 3. Apply Gains in Order: Coins -> Equipment -> Experience
+        if (gainedCoins > 0) this.player.addCoins(gainedCoins);
+        if (gainedEquipment > 0) this.player.addEquipmentPoints(gainedEquipment);
+        if (gainedExperience > 0) this.player.addExperience(gainedExperience);
 
         this.grid.removeTiles(tilesToRemove);
         this.updateDamagePreview([]); // Clear preview
