@@ -2,6 +2,7 @@ import { Grid } from './Grid';
 import { InputHandler } from './InputHandler';
 import { Tile, TileType } from './Tile';
 import { Player } from './Player';
+import { UpgradeManager } from './UpgradeManager';
 
 export class GameManager {
     container: HTMLElement;
@@ -14,11 +15,23 @@ export class GameManager {
     isProcessing: boolean = false;
     isGameOver: boolean = false;
 
+    upgradeManager: UpgradeManager;
+    upgradeQueue: ('coin' | 'equipment' | 'experience')[] = [];
+
     constructor(containerId: string) {
         const el = document.getElementById(containerId);
         if (!el) throw new Error(`Container ${containerId} not found`);
         this.container = el;
         this.player = new Player();
+        this.upgradeManager = new UpgradeManager();
+
+        // Setup Level Up Handler
+        this.player.onLevelUp = (type) => {
+            this.upgradeQueue.push(type);
+            if (!this.isProcessing) {
+                this.processUpgradeQueue();
+            }
+        };
 
         // Create Grid Container and Player Stats
         this.container.innerHTML = `
@@ -84,6 +97,22 @@ export class GameManager {
         this.renderGrid();
         this.setupInputListeners(gridEl);
         this.updatePlayerUI();
+    }
+
+    processUpgradeQueue() {
+        if (this.upgradeQueue.length === 0) {
+            this.isProcessing = false;
+            return;
+        }
+
+        this.isProcessing = true;
+        const type = this.upgradeQueue.shift()!;
+        this.upgradeManager.showUpgradeSelection(type, () => {
+            // Slight delay before next one to feel natural
+            setTimeout(() => {
+                this.processUpgradeQueue();
+            }, 100);
+        });
     }
 
     updatePlayerUI() {
@@ -233,6 +262,7 @@ export class GameManager {
             // Unblock after animation
             setTimeout(() => {
                 this.isProcessing = false;
+                this.processUpgradeQueue();
             }, 450); // Slightly longer than CSS transition (0.4s)
         }
         this.clearSelection();

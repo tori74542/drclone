@@ -13,6 +13,7 @@ export class Player {
     maxCoins: number;
     maxEquipmentPoints: number;
     maxExperience: number;
+    onLevelUp: ((type: 'coin' | 'equipment' | 'experience') => void) | null = null;
 
     constructor() {
         this.maxHp = 100;
@@ -21,11 +22,11 @@ export class Player {
         this.maxDefense = 10;
         this.currentDefense = 9;
         this.coins = 0;
-        this.maxCoins = 100;
+        this.maxCoins = 10;
         this.equipmentPoints = 0;
-        this.maxEquipmentPoints = 100;
+        this.maxEquipmentPoints = 10;
         this.experience = 0;
-        this.maxExperience = 100;
+        this.maxExperience = 10;
         this.score = 0;
         this.highScore = parseInt(localStorage.getItem('dungeon-raid-high-score') || '0', 10);
     }
@@ -55,14 +56,14 @@ export class Player {
     }
 
     private levelUpCoins() {
-        console.log("Level Up Coins! (Dummy)");
+        if (this.onLevelUp) this.onLevelUp('coin');
     }
 
     private levelUpEquipment() {
-        console.log("Level Up Equipment! (Dummy)");
+        if (this.onLevelUp) this.onLevelUp('equipment');
     }
 
     private levelUpExperience() {
-        console.log("Level Up Experience! (Dummy)");
+        if (this.onLevelUp) this.onLevelUp('experience');
     }
 }

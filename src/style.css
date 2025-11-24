@@ -331,6 +331,98 @@ body {
   pointer-events: auto;
 }
 
+/* Upgrade UI */
+.upgrade-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.upgrade-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.upgrade-modal {
+  background: #2c3e50;
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: center;
+  max-width: 800px;
+  width: 90%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  border: 2px solid #34495e;
+}
+
+.upgrade-title {
+  color: #ecf0f1;
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.upgrade-options {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.upgrade-card {
+  background: #34495e;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 500px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  text-align: left;
+}
+
+.upgrade-card:hover {
+  transform: translateY(-5px);
+  background: #3d566e;
+  border-color: #3498db;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.card-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0;
+  color: #f1c40f;
+  flex-shrink: 0;
+}
+
+.card-title {
+  color: #ecf0f1;
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.card-desc {
+  color: #bdc3c7;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
 .game-over-content {
   text-align: center;
   color: #fff;
