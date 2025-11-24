@@ -7,6 +7,8 @@ export class Player {
     coins: number;
     equipmentPoints: number;
     experience: number;
+    score: number;
+    highScore: number;
 
     constructor() {
         this.maxHp = 100;
@@ -17,5 +19,7 @@ export class Player {
         this.coins = 0;
         this.equipmentPoints = 0;
         this.experience = 0;
+        this.score = 0;
+        this.highScore = parseInt(localStorage.getItem('dungeon-raid-high-score') || '0', 10);
     }
 }

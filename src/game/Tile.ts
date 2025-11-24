@@ -1,10 +1,12 @@
-export enum TileType {
-  Sword = 'sword',
-  Shield = 'shield',
-  Potion = 'potion',
-  Coin = 'coin',
-  Enemy = 'enemy'
-}
+export const TileType = {
+  Sword: 'sword',
+  Shield: 'shield',
+  Potion: 'potion',
+  Coin: 'coin',
+  Enemy: 'enemy'
+} as const;
+
+export type TileType = typeof TileType[keyof typeof TileType];
 
 export interface EnemyStats {
   attack: number;

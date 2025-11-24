@@ -299,6 +299,16 @@ body {
   /* White */
 }
 
+.stat-item.score .value {
+  color: #f39c12;
+  /* Orange */
+}
+
+.stat-item.high-score .value {
+  color: #9b59b6;
+  /* Purple */
+}
+
 /* Game Over Overlay */
 .game-over-overlay {
   position: absolute;

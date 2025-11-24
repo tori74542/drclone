@@ -56,6 +56,17 @@ export class GameManager {
                 <span class="value" id="player-exp">${this.player.experience}</span>
             </div>
         </div>
+        </div>
+        <div class="stats-row">
+            <div class="stat-item score">
+                <span class="label">SCORE</span>
+                <span class="value" id="player-score">${this.player.score}</span>
+            </div>
+             <div class="stat-item high-score">
+                <span class="label">HIGH</span>
+                <span class="value" id="player-high-score">${this.player.highScore}</span>
+            </div>
+        </div>
       </div>
     `;
 
@@ -82,6 +93,8 @@ export class GameManager {
         const coinsEl = document.getElementById('player-coins');
         const eqEl = document.getElementById('player-equipment');
         const expEl = document.getElementById('player-exp');
+        const scoreEl = document.getElementById('player-score');
+        const highScoreEl = document.getElementById('player-high-score');
 
         if (hpEl) hpEl.textContent = `${this.player.currentHp}/${this.player.maxHp}`;
         if (defEl) defEl.textContent = `${this.player.currentDefense}/${this.player.maxDefense}`;
@@ -89,6 +102,8 @@ export class GameManager {
         if (coinsEl) coinsEl.textContent = `${this.player.coins}`;
         if (eqEl) eqEl.textContent = `${this.player.equipmentPoints}`;
         if (expEl) expEl.textContent = `${this.player.experience}`;
+        if (scoreEl) scoreEl.textContent = `${this.player.score}`;
+        if (highScoreEl) highScoreEl.textContent = `${this.player.highScore}`;
     }
 
     setupInputListeners(gridEl: HTMLElement) {
@@ -437,13 +452,20 @@ export class GameManager {
                     if (tile.stats.hp <= 0) {
                         tilesToRemove.push(tile);
                         this.player.experience += 1;
+                        // Score for kill: 10 * maxHp (approx difficulty)
+                        this.player.score += (tile.stats.hp + damage) * 10; // Use original HP or just damage dealt? Let's use maxHp estimate or just constant
+                        // Better: 50 points per kill + bonus
+                        this.player.score += 50;
                     }
                 }
             } else if (tile.type !== TileType.Sword) {
                 tilesToRemove.push(tile);
 
                 // Resources
-                if (tile.type === TileType.Coin) this.player.coins += 1;
+                if (tile.type === TileType.Coin) {
+                    this.player.coins += 1;
+                    this.player.score += 10; // 10 points per coin
+                }
                 if (tile.type === TileType.Potion) this.player.currentHp = Math.min(this.player.maxHp, this.player.currentHp + 1);
                 if (tile.type === TileType.Shield) {
                     if (this.player.currentDefense < this.player.maxDefense) {
@@ -462,13 +484,20 @@ export class GameManager {
     handleGameOver() {
         this.isGameOver = true;
 
+        // Update High Score
+        if (this.player.score > this.player.highScore) {
+            this.player.highScore = this.player.score;
+            localStorage.setItem('dungeon-raid-high-score', this.player.highScore.toString());
+        }
+
         // Create Overlay
         const overlay = document.createElement('div');
         overlay.className = 'game-over-overlay';
         overlay.innerHTML = `
             <div class="game-over-content">
                 <div class="game-over-title">Game Over</div>
-                <div class="game-over-score">You were defeated!</div>
+                <div class="game-over-score">Score: ${this.player.score}</div>
+                <div class="game-over-highscore">High Score: ${this.player.highScore}</div>
                 <button class="restart-btn" id="restart-btn">Try Again</button>
             </div>
         `;
