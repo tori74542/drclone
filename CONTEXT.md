@@ -97,21 +97,34 @@ This project is a web-based clone of the puzzle RPG "Dungeon Raid", built with *
   - **Coins**: 0.
   - **Equipment Points**: 0.
   - **Experience**: 0.
+  - **Shield Value**: 1 (Defense gain per shield tile).
   - `InputHandler.ts`: Handles mouse/touch events for the drag mechanic.
 - `src/style.css`: Global styles, grid layout, and animations.
 
+### Upgrade System
+- **Concept**: A weighted random selection system for player upgrades.
+- **Triggers**: Occurs when Coins, Equipment Points, or Experience reach their respective maximums.
+- **Types**:
+  - **Coin**: Upgrades related to wealth or resource collection.
+  - **Equipment**: Upgrades related to attack, defense, or stats.
+  - **Experience**: Upgrades related to leveling or special abilities.
+- **Selection**: 3 unique upgrades are presented to the player based on defined weights.
+- **Effects**: Upgrades can modify player stats, game state, or provide immediate bonuses.
+
+### Scoring & Game Over
+- **Scoring**: Points are awarded for collecting coins and killing enemies.
+- **Game Over**: Triggered when Player HP reaches 0. Displays a "Game Over" overlay with final score and high score.
+
 ## Next Steps
-1.  **Game Over Logic**: End game when HP reaches 0.
-2.  **Skills/Upgrades**: Add active skills and leveling up.
-3.  **Sound Effects**: Add audio feedback.
-4.  **Scoring System**: Implement logic to calculate score based on chain length and tile type.
+1.  **Sound Effects**: Add audio feedback for actions (move, attack, level up, game over).
 
 ## Development Notes
 - **Tile Positioning**: Tiles use absolute positioning (`top`, `left`) to enable smooth CSS transitions for falling animations.
 - **Z-Index**: The connection line SVG layer has a high z-index to appear on top of opaque tiles (Sword/Enemy).
 - **Potions**: +1 HP per tile, capped at Max HP.
-- **Shields**: +1 Defense per tile, capped at Max Defense. Overflow adds to Equipment Points.
+- **Shields**: +`shieldValue` Defense per tile, capped at Max Defense. Overflow adds to Equipment Points.
 - **Experience**: +1 EXP per killed Enemy.
+- **Damage Prediction**: A visual indicator shows potential damage when selecting a chain of swords and enemies.
 
 ### Enemy Attack Logic (Turn-Based)
 - **Timing**: Occurs after player's turn (tile removal and falling) is processed.
