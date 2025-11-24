@@ -9,6 +9,7 @@ export class GameManager {
     inputHandler: InputHandler;
     svgLayer: SVGSVGElement;
     player: Player;
+    damageIndicator: HTMLElement;
 
     isProcessing: boolean = false;
     isGameOver: boolean = false;
@@ -24,6 +25,7 @@ export class GameManager {
       <div class="game-container">
         <div class="grid" id="grid"></div>
         <svg class="connection-layer" id="connection-layer"></svg>
+        <div id="damage-indicator"></div>
       </div>
       <div class="player-stats" id="player-stats">
         <div class="stats-row">
@@ -59,6 +61,7 @@ export class GameManager {
 
         const gridEl = document.getElementById('grid')!;
         this.svgLayer = document.getElementById('connection-layer') as unknown as SVGSVGElement;
+        this.damageIndicator = document.getElementById('damage-indicator')!;
 
         this.grid = new Grid();
         this.inputHandler = new InputHandler(
@@ -145,75 +148,26 @@ export class GameManager {
         if (tile) {
             this.inputHandler.continueDrag(tile);
         }
+
+        // Update damage indicator position
+        if (this.damageIndicator.classList.contains('visible')) {
+            const clientX = e instanceof MouseEvent ? e.clientX : e.touches[0].clientX;
+            const clientY = e instanceof MouseEvent ? e.clientY : e.touches[0].clientY;
+            this.damageIndicator.style.left = `${clientX}px`;
+            this.damageIndicator.style.top = `${clientY}px`;
+        }
     }
 
     onSelectionChange(selectedTiles: Tile[]) {
         this.renderSelection(selectedTiles);
+        this.updateDamagePreview(selectedTiles);
     }
-
     onSelectionEnd(selectedTiles: Tile[]) {
         if (selectedTiles.length >= 3) {
             this.isProcessing = true; // Start blocking
 
             // Combat Logic
-            const tilesToRemove: Tile[] = [];
-            let totalAttack = 0;
-
-            // 1. Calculate Total Attack (1 per Sword)
-            selectedTiles.forEach(tile => {
-                if (tile.type === TileType.Sword) {
-                    totalAttack += 1;
-                    tilesToRemove.push(tile); // Swords always removed
-                }
-            });
-
-            // 2. Apply Damage to Enemies
-            selectedTiles.forEach(tile => {
-                if (tile.type === TileType.Enemy) {
-                    if (totalAttack > 0) {
-                        const defense = tile.stats?.defense || 0;
-                        const damage = Math.max(1, totalAttack - defense);
-                        if (tile.stats) {
-                            tile.stats.hp -= damage;
-                        }
-                        if (tile.stats && tile.stats.hp <= 0) {
-                            tilesToRemove.push(tile);
-                            this.player.experience += 1;
-                        }
-                    } else {
-                        // If no swords involved (e.g. just enemies connected)
-                        // Deal 1 damage per enemy (min damage rule)
-                        const defense = tile.stats?.defense || 0;
-                        const damage = Math.max(1, totalAttack - defense); // totalAttack is 0
-                        if (tile.stats) {
-                            tile.stats.hp -= damage;
-                        }
-
-                        if (tile.stats && tile.stats.hp <= 0) {
-                            tilesToRemove.push(tile);
-                            this.player.experience += 1;
-                        }
-                    }
-                } else if (tile.type !== TileType.Sword) {
-                    // Other tiles (Potion, Coin, Shield) always removed
-                    tilesToRemove.push(tile);
-
-                    // Resource Collection Logic
-                    if (tile.type === TileType.Coin) {
-                        this.player.coins += 1;
-                    } else if (tile.type === TileType.Potion) {
-                        this.player.currentHp = Math.min(this.player.maxHp, this.player.currentHp + 1);
-                    } else if (tile.type === TileType.Shield) {
-                        if (this.player.currentDefense < this.player.maxDefense) {
-                            this.player.currentDefense += 1;
-                        } else {
-                            this.player.equipmentPoints += 1;
-                        }
-                    }
-                }
-            });
-
-            this.grid.removeTiles(tilesToRemove);
+            this.processTurn(selectedTiles);
 
             // Enemy Attack Logic (Turn-Based)
             // Iterate through all tiles to find surviving enemies
@@ -254,6 +208,8 @@ export class GameManager {
         }
         this.clearSelection();
     }
+
+
 
     renderGrid() {
         const gridEl = document.getElementById('grid')!;
@@ -401,6 +357,106 @@ export class GameManager {
         polyline.style.stroke = color;
 
         this.svgLayer.appendChild(polyline);
+    }
+
+    calculateCombatResult(selectedTiles: Tile[]): { totalDamage: number, killedEnemies: Tile[] } {
+        let totalAttack = 0;
+        const killedEnemies: Tile[] = [];
+
+        // 1. Calculate Total Attack
+        selectedTiles.forEach(tile => {
+            if (tile.type === TileType.Sword) {
+                totalAttack += 1;
+            }
+        });
+
+        // 2. Predict Damage to Enemies
+        selectedTiles.forEach(tile => {
+            if (tile.type === TileType.Enemy) {
+                const defense = tile.stats?.defense || 0;
+                // If swords are present, damage = max(1, attack - defense)
+                // If NO swords, damage = max(1, 0 - defense) = 1 (min damage rule)
+                // Wait, if 0 attack and 5 defense, 0 - 5 = -5. Max(1, -5) = 1.
+                // So the formula is consistent: Math.max(1, totalAttack - defense).
+
+                const damage = Math.max(1, totalAttack - defense);
+
+                if (tile.stats && tile.stats.hp - damage <= 0) {
+                    killedEnemies.push(tile);
+                }
+            }
+        });
+
+        return { totalDamage: totalAttack, killedEnemies };
+    }
+
+    updateDamagePreview(selectedTiles: Tile[]) {
+        // Reset styles
+        document.querySelectorAll('.tile').forEach(t => t.classList.remove('will-die'));
+        this.damageIndicator.classList.remove('visible');
+
+        if (selectedTiles.length < 3) return;
+
+        // Check if we have swords or enemies
+        const hasCombat = selectedTiles.some(t => t.type === TileType.Sword || t.type === TileType.Enemy);
+        if (!hasCombat) return;
+
+        const { totalDamage, killedEnemies } = this.calculateCombatResult(selectedTiles);
+
+        // Show damage indicator
+        this.damageIndicator.textContent = `${totalDamage} dmg`;
+        this.damageIndicator.classList.add('visible');
+
+        // Mark killed enemies
+        killedEnemies.forEach(tile => {
+            const el = document.getElementById(`tile-${tile.id}`);
+            if (el) el.classList.add('will-die');
+        });
+    }
+
+    processTurn(selectedTiles: Tile[]) {
+        const tilesToRemove: Tile[] = [];
+        let totalAttack = 0;
+
+        // 1. Calculate Total Attack
+        selectedTiles.forEach(tile => {
+            if (tile.type === TileType.Sword) {
+                totalAttack += 1;
+                tilesToRemove.push(tile);
+            }
+        });
+
+        // 2. Apply Damage and Collect Resources
+        selectedTiles.forEach(tile => {
+            if (tile.type === TileType.Enemy) {
+                const defense = tile.stats?.defense || 0;
+                const damage = Math.max(1, totalAttack - defense);
+
+                if (tile.stats) {
+                    tile.stats.hp -= damage;
+                    if (tile.stats.hp <= 0) {
+                        tilesToRemove.push(tile);
+                        this.player.experience += 1;
+                    }
+                }
+            } else if (tile.type !== TileType.Sword) {
+                tilesToRemove.push(tile);
+
+                // Resources
+                if (tile.type === TileType.Coin) this.player.coins += 1;
+                if (tile.type === TileType.Potion) this.player.currentHp = Math.min(this.player.maxHp, this.player.currentHp + 1);
+                if (tile.type === TileType.Shield) {
+                    if (this.player.currentDefense < this.player.maxDefense) {
+                        this.player.currentDefense += 1;
+                    } else {
+                        this.player.equipmentPoints += 1;
+                    }
+                }
+            }
+        });
+
+        this.grid.removeTiles(tilesToRemove);
+        this.updateDamagePreview([]); // Clear preview
     }
 
     handleGameOver() {

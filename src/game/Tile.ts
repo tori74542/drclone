@@ -29,7 +29,7 @@ export class Tile {
     if (this.type === TileType.Enemy) {
       this.stats = {
         attack: 5 + Math.floor(Math.random() * 3) - 1, // 5 +/- 1 (4, 5, 6) for debug
-        defense: 5 + Math.floor(Math.random() * 3) - 1, // 5 +/- 1 (4, 5, 6) for debug
+        defense: 0, // Debug: set to 0 to test kill mark
         hp: 3 + Math.floor(Math.random() * 3) - 1 // 3 +/- 1 (2, 3, 4) for debug
       };
     }

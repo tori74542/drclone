@@ -368,3 +368,41 @@ body {
 .restart-btn:hover {
   background: #c0392b;
 }
+
+/* Damage Indicator */
+#damage-indicator {
+  position: fixed;
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: bold;
+  z-index: 1000;
+  transform: translate(15px, -100%);
+  white-space: nowrap;
+  display: none;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+#damage-indicator.visible {
+  display: block;
+}
+
+/* Kill Mark */
+.tile.will-die::after {
+  content: "✕";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 40px;
+  color: #e74c3c;
+  font-weight: bold;
+  text-shadow: 0 0 5px #000;
+  pointer-events: none;
+  z-index: 20;
+  opacity: 0.8;
+}
