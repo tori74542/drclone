@@ -10,6 +10,7 @@ export class Player {
     experience: number;
     score: number;
     highScore: number;
+    shieldValue: number = 1;
 
     maxCoins: number;
     maxEquipmentPoints: number;

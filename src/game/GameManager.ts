@@ -533,8 +533,8 @@ export class GameManager {
                     this.player.currentHp = Math.min(this.player.maxHp, this.player.currentHp + healAmount);
                 }
                 if (tile.type === TileType.Shield) {
-                    // Shield logic is a bit complex (def vs eq), let's apply multiplier to the "unit" gained
-                    for (let i = 0; i < multiplier; i++) {
+                    const totalGain = this.player.shieldValue * multiplier;
+                    for (let i = 0; i < totalGain; i++) {
                         if (this.player.currentDefense < this.player.maxDefense) {
                             this.player.currentDefense += 1;
                         } else {
