@@ -15,6 +15,11 @@ export class Player {
     maxExperience: number;
     onLevelUp: ((type: 'coin' | 'equipment' | 'experience') => void) | null = null;
 
+    // Bonus Rates
+    coinBonusRate: number = 0.2;
+    shieldBonusRate: number = 0.2;
+    potionBonusRate: number = 0.2;
+
     constructor() {
         this.maxHp = 100;
         this.currentHp = 99;

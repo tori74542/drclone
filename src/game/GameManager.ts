@@ -491,7 +491,7 @@ export class GameManager {
         });
 
         // 2. Apply Damage and Collect Resources
-        selectedTiles.forEach(tile => {
+        selectedTiles.forEach((tile, index) => {
             if (tile.type === TileType.Enemy) {
                 const defense = tile.stats?.defense || 0;
                 const damage = Math.max(1, totalAttack - defense);
@@ -508,17 +508,37 @@ export class GameManager {
             } else if (tile.type !== TileType.Sword) {
                 tilesToRemove.push(tile);
 
+                // Check for Bonus (4th tile onwards)
+                let multiplier = 1;
+                if (index >= 3) {
+                    let bonusRate = 0;
+                    if (tile.type === TileType.Coin) bonusRate = this.player.coinBonusRate;
+                    if (tile.type === TileType.Shield) bonusRate = this.player.shieldBonusRate;
+                    if (tile.type === TileType.Potion) bonusRate = this.player.potionBonusRate;
+
+                    if (Math.random() < bonusRate) {
+                        multiplier = 2;
+                        console.log(`Bonus! Double ${tile.type}`);
+                    }
+                }
+
                 // Resources
                 if (tile.type === TileType.Coin) {
-                    gainedCoins += 1;
-                    this.player.score += 10; // 10 points per coin
+                    gainedCoins += 1 * multiplier;
+                    this.player.score += 10 * multiplier;
                 }
-                if (tile.type === TileType.Potion) this.player.currentHp = Math.min(this.player.maxHp, this.player.currentHp + 1);
+                if (tile.type === TileType.Potion) {
+                    const healAmount = 1 * multiplier;
+                    this.player.currentHp = Math.min(this.player.maxHp, this.player.currentHp + healAmount);
+                }
                 if (tile.type === TileType.Shield) {
-                    if (this.player.currentDefense < this.player.maxDefense) {
-                        this.player.currentDefense += 1;
-                    } else {
-                        gainedEquipment += 1;
+                    // Shield logic is a bit complex (def vs eq), let's apply multiplier to the "unit" gained
+                    for (let i = 0; i < multiplier; i++) {
+                        if (this.player.currentDefense < this.player.maxDefense) {
+                            this.player.currentDefense += 1;
+                        } else {
+                            gainedEquipment += 1;
+                        }
                     }
                 }
             }
