@@ -1,3 +1,5 @@
+import { type Skill, SkillRegistry } from './Skill';
+
 export class Player {
     maxHp: number;
     currentHp: number;
@@ -21,6 +23,9 @@ export class Player {
     coinBonusRate: number = 0.2;
     shieldBonusRate: number = 0.2;
     potionBonusRate: number = 0.2;
+
+    skills: (Skill | null)[] = [null, null, null, null];
+
 
     constructor() {
         this.maxHp = 100;
@@ -73,5 +78,18 @@ export class Player {
 
     private levelUpExperience() {
         if (this.onLevelUp) this.onLevelUp('experience');
+    }
+
+    addSkill(skillId: string) {
+        const skill = SkillRegistry.getSkill(skillId);
+        if (!skill) return;
+
+        // Find first empty slot
+        const emptyIndex = this.skills.findIndex(s => s === null);
+        if (emptyIndex !== -1) {
+            this.skills[emptyIndex] = skill;
+        } else {
+            console.log('No empty skill slots!');
+        }
     }
 }

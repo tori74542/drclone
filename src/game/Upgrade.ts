@@ -14,133 +14,99 @@ export interface Upgrade {
 export const UPGRADES: Upgrade[] = [
     // --- COIN UPGRADES ---
     {
-        id: 'coin_wealth',
-        name: 'Sudden Wealth',
-        description: 'Instantly gain 50 coins.',
-        type: 'coin',
-        weight: 20,
-        effect: (player, grid) => {
-            player.addCoins(50);
-            console.log('Effect: Sudden Wealth (+50 Coins)');
-        }
-    },
-    {
-        id: 'coin_pocket',
-        name: 'Deep Pockets',
-        description: 'Increase max coins by 10.',
-        type: 'coin',
-        weight: 15,
-        effect: (player, grid) => {
-            player.maxCoins += 10;
-            console.log('Effect: Deep Pockets (Max Coins +10)');
-        }
-    },
-    {
-        id: 'coin_greed',
-        name: 'Greed',
-        description: 'Coin tiles appear slightly more often.',
+        id: 'upgrade_weapon',
+        name: 'Upgrade Weapon',
+        description: 'Add 1 to weapon attack.',
         type: 'coin',
         weight: 10,
         effect: (player, grid) => {
-            // TODO: Implement spawn rate modification
-            console.log('Effect: Greed (Not implemented)');
+            player.weaponAttack += 1;
+            console.log('Effect: Upgrade Weapon (Weapon Attack +1)');
         }
     },
     {
-        id: 'coin_interest',
-        name: 'Compound Interest',
-        description: 'Gain 1 coin for every 10 coins you currently have.',
+        id: 'upgrade_shield',
+        name: 'Upgrade Shield',
+        description: 'Add 1 to shield value.',
         type: 'coin',
         weight: 10,
         effect: (player, grid) => {
-            const interest = Math.floor(player.coins / 10);
-            player.addCoins(interest);
-            console.log(`Effect: Compound Interest (+${interest} Coins)`);
+            player.shieldValue += 1;
+            console.log('Effect: Upgrade Shield (Shield Value +1)');
         }
     },
     {
-        id: 'coin_alchemist',
-        name: 'Alchemist',
-        description: 'Turn all currently visible enemy tiles into potion tiles.',
+        id: 'upgrade_hp',
+        name: 'Upgrade HP',
+        description: 'Add 5 to max HP.',
         type: 'coin',
-        weight: 5,
+        weight: 10,
         effect: (player, grid) => {
-            let count = 0;
-            for (let y = 0; y < grid.height; y++) {
-                for (let x = 0; x < grid.width; x++) {
-                    const tile = grid.getTile(x, y);
-                    if (tile && tile.type === TileType.Enemy) {
-                        tile.type = TileType.Potion;
-                        // Reset stats since it's no longer an enemy
-                        tile.stats = undefined;
-                        // Update the DOM element immediately
-                        const tileEl = document.getElementById(`tile-${tile.id}`);
-                        if (tileEl) {
-                            tileEl.className = `tile ${TileType.Potion}`;
-                            tileEl.innerHTML = tile.getIcon();
-                        }
-                        count++;
-                    }
-                }
-            }
-            console.log(`Effect: Alchemist (Converted ${count} enemies to potions)`);
+            player.maxHp += 5;
+            console.log('Effect: Upgrade HP (Max HP +5)');
         }
     },
+    {
+        id: 'skill_fireball',
+        name: 'Fireball',
+        description: 'Get fireball skill.',
+        type: 'coin',
+        weight: 10,
+        effect: (player, grid) => {
+            player.addSkill('fireball');
+            console.log('Effect: Fireball (Skill added)');
+        }
+    },
+    // {
+    //     id: 'coin_alchemist',
+    //     name: 'Alchemist',
+    //     description: 'Turn all currently visible enemy tiles into potion tiles.',
+    //     type: 'coin',
+    //     weight: 5,
+    //     effect: (player, grid) => {
+    //         let count = 0;
+    //         for (let y = 0; y < grid.height; y++) {
+    //             for (let x = 0; x < grid.width; x++) {
+    //                 const tile = grid.getTile(x, y);
+    //                 if (tile && tile.type === TileType.Enemy) {
+    //                     tile.type = TileType.Potion;
+    //                     // Reset stats since it's no longer an enemy
+    //                     tile.stats = undefined;
+    //                     // Update the DOM element immediately
+    //                     const tileEl = document.getElementById(`tile-${tile.id}`);
+    //                     if (tileEl) {
+    //                         tileEl.className = `tile ${TileType.Potion}`;
+    //                         tileEl.innerHTML = tile.getIcon();
+    //                     }
+    //                     count++;
+    //                 }
+    //             }
+    //         }
+    //         console.log(`Effect: Alchemist (Converted ${count} enemies to potions)`);
+    //     }
+    // },
 
     // --- EQUIPMENT UPGRADES ---
     {
-        id: 'eq_sharpen',
-        name: 'Sharpen Blade',
-        description: 'Increase Weapon Attack by 1.',
+        id: 'max_defense',
+        name: 'Max Defense',
+        description: 'Increase Max Defense by 1.',
         type: 'equipment',
-        weight: 20,
+        weight: 10,
         effect: (player, grid) => {
-            player.weaponAttack += 1;
-            console.log('Effect: Sharpen Blade (Weapon Attack +1)');
+            player.maxDefense += 1;
+            console.log('Effect: Max Defense (Max Defense +1)');
         }
     },
     {
-        id: 'eq_reinforce',
-        name: 'Reinforce Armor',
-        description: 'Increase Max Defense by 2.',
-        type: 'equipment',
-        weight: 15,
-        effect: (player, grid) => {
-            player.maxDefense += 2;
-            console.log('Effect: Reinforce Armor (Max Defense +2)');
-        }
-    },
-    {
-        id: 'eq_training',
-        name: 'Basic Training',
+        id: 'base_power',
+        name: 'Base Power',
         description: 'Increase Base Attack by 1.',
         type: 'equipment',
         weight: 10,
         effect: (player, grid) => {
             player.baseAttack += 1;
-            console.log('Effect: Basic Training (Base Attack +1)');
-        }
-    },
-    {
-        id: 'eq_repair',
-        name: 'Quick Repair',
-        description: 'Fully restore current Defense.',
-        type: 'equipment',
-        weight: 10,
-        effect: (player, grid) => {
-            player.currentDefense = player.maxDefense;
-            console.log('Effect: Quick Repair (Defense Restored)');
-        }
-    },
-    {
-        id: 'eq_mastery',
-        name: 'Sword Mastery',
-        description: 'Sword tiles deal +1 extra damage.',
-        type: 'equipment',
-        weight: 5,
-        effect: (player, grid) => {
-            // TODO: Implement damage modifier logic
-            console.log('Effect: Sword Mastery (Not implemented)');
+            console.log('Effect: Base Power (Base Attack +1)');
         }
     },
 

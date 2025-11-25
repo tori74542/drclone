@@ -3,6 +3,7 @@ import { InputHandler } from './InputHandler';
 import { Tile, TileType } from './Tile';
 import { Player } from './Player';
 import { UpgradeManager } from './UpgradeManager';
+import { type Skill, SkillRegistry } from './Skill';
 
 export class GameManager {
     container: HTMLElement;
@@ -17,6 +18,9 @@ export class GameManager {
 
     upgradeManager: UpgradeManager;
     upgradeQueue: ('coin' | 'equipment' | 'experience')[] = [];
+
+
+
 
     constructor(containerId: string) {
         const el = document.getElementById(containerId);
@@ -40,6 +44,7 @@ export class GameManager {
         <svg class="connection-layer" id="connection-layer"></svg>
         <div id="damage-indicator"></div>
       </div>
+      <div id="skill-container" class="skill-container"></div>
       <div class="player-stats" id="player-stats">
         <div class="stats-row">
             <div class="stat-item hp">
@@ -94,9 +99,49 @@ export class GameManager {
             this.onSelectionEnd.bind(this)
         );
 
+        // So using a skill does NOT pass a turn itself, usually.
         this.renderGrid();
         this.setupInputListeners(gridEl);
         this.updatePlayerUI();
+        this.renderSkillUI();
+    }
+
+    activateSkill(index: number) {
+        if (this.isProcessing || this.isGameOver) return;
+
+        const skill = this.player.skills[index];
+        if (skill && skill.cooldownCurrent === 0) {
+            skill.activate();
+            skill.cooldownCurrent = skill.cooldownMax;
+            this.renderSkillUI();
+        }
+    }
+
+    renderSkillUI() {
+        const skillContainer = document.getElementById('skill-container');
+        if (!skillContainer) return;
+
+        skillContainer.innerHTML = '';
+
+        this.player.skills.forEach((skill, index) => {
+            const slot = document.createElement('div');
+            slot.className = 'skill-slot';
+
+            if (skill) {
+                slot.innerHTML = `
+                    <div class="skill-icon">${skill.iconUrl}</div>
+                    ${skill.cooldownCurrent > 0 ? `<div class="skill-cooldown-overlay">${skill.cooldownCurrent}</div>` : ''}
+                `;
+                slot.onclick = () => this.activateSkill(index);
+                if (skill.cooldownCurrent > 0) {
+                    slot.classList.add('cooldown');
+                }
+            } else {
+                slot.classList.add('empty');
+            }
+
+            skillContainer.appendChild(slot);
+        });
     }
 
     processUpgradeQueue() {
@@ -481,6 +526,14 @@ export class GameManager {
         let gainedCoins = 0;
         let gainedEquipment = 0;
         let gainedExperience = 0;
+
+        // Decrease Cooldowns
+        this.player.skills.forEach(skill => {
+            if (skill && skill.cooldownCurrent > 0) {
+                skill.cooldownCurrent--;
+            }
+        });
+        this.renderSkillUI();
 
         // 1. Calculate Sword Count
         selectedTiles.forEach(tile => {
