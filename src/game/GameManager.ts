@@ -153,6 +153,8 @@ export class GameManager {
         this.isProcessing = true;
         const type = this.upgradeQueue.shift()!;
         this.upgradeManager.showUpgradeSelection(type, this.player, this.grid, () => {
+            this.updatePlayerUI();
+            this.renderSkillUI();
             // Slight delay before next one to feel natural
             setTimeout(() => {
                 this.processUpgradeQueue();
