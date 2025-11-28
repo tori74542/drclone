@@ -1,6 +1,10 @@
 import { Player } from './Player';
 import { Grid } from './Grid';
-import { TileType } from './Tile';
+
+export interface UpgradeContext {
+    player: Player;
+    grid: Grid;
+}
 
 export interface Upgrade {
     id: string;
@@ -8,7 +12,7 @@ export interface Upgrade {
     description: string;
     type: 'coin' | 'equipment' | 'experience';
     weight: number;
-    effect: (player: Player, grid: Grid) => void;
+    effect: (context: UpgradeContext) => void;
 }
 
 export const UPGRADES: Upgrade[] = [
@@ -19,7 +23,7 @@ export const UPGRADES: Upgrade[] = [
         description: 'Add 1 to weapon attack.',
         type: 'coin',
         weight: 10,
-        effect: (player, grid) => {
+        effect: ({ player }) => {
             player.weaponAttack += 1;
             console.log('Effect: Upgrade Weapon (Weapon Attack +1)');
         }
@@ -30,7 +34,7 @@ export const UPGRADES: Upgrade[] = [
         description: 'Add 1 to shield value.',
         type: 'coin',
         weight: 10,
-        effect: (player, grid) => {
+        effect: ({ player }) => {
             player.shieldValue += 1;
             console.log('Effect: Upgrade Shield (Shield Value +1)');
         }
@@ -41,7 +45,7 @@ export const UPGRADES: Upgrade[] = [
         description: 'Add 5 to max HP.',
         type: 'coin',
         weight: 10,
-        effect: (player, grid) => {
+        effect: ({ player }) => {
             player.maxHp += 5;
             console.log('Effect: Upgrade HP (Max HP +5)');
         }
@@ -52,7 +56,7 @@ export const UPGRADES: Upgrade[] = [
         description: 'Get fireball skill.',
         type: 'coin',
         weight: 10,
-        effect: (player, grid) => {
+        effect: ({ player }) => {
             player.addSkill('fireball');
             console.log('Effect: Fireball (Skill added)');
         }
@@ -63,7 +67,7 @@ export const UPGRADES: Upgrade[] = [
     //     description: 'Turn all currently visible enemy tiles into potion tiles.',
     //     type: 'coin',
     //     weight: 5,
-    //     effect: (player, grid) => {
+    //     effect: ({ grid }) => {
     //         let count = 0;
     //         for (let y = 0; y < grid.height; y++) {
     //             for (let x = 0; x < grid.width; x++) {
@@ -93,7 +97,7 @@ export const UPGRADES: Upgrade[] = [
         description: 'Increase Max Defense by 1.',
         type: 'equipment',
         weight: 10,
-        effect: (player, grid) => {
+        effect: ({ player }) => {
             player.maxDefense += 1;
             console.log('Effect: Max Defense (Max Defense +1)');
         }
@@ -104,7 +108,7 @@ export const UPGRADES: Upgrade[] = [
         description: 'Increase Base Attack by 1.',
         type: 'equipment',
         weight: 10,
-        effect: (player, grid) => {
+        effect: ({ player }) => {
             player.baseAttack += 1;
             console.log('Effect: Base Power (Base Attack +1)');
         }
@@ -117,7 +121,7 @@ export const UPGRADES: Upgrade[] = [
         description: 'Gain 10 Experience instantly.',
         type: 'experience',
         weight: 20,
-        effect: (player, grid) => {
+        effect: ({ player }) => {
             player.addExperience(10);
             console.log('Effect: Wisdom (+10 Exp)');
         }
@@ -128,7 +132,7 @@ export const UPGRADES: Upgrade[] = [
         description: 'Increase Max HP by 5.',
         type: 'experience',
         weight: 15,
-        effect: (player, grid) => {
+        effect: ({ player }) => {
             player.maxHp += 5;
             player.currentHp += 5; // Heal the amount gained? Usually yes.
             console.log('Effect: Vitality (Max HP +5)');
@@ -140,7 +144,7 @@ export const UPGRADES: Upgrade[] = [
         description: 'Heal 20 HP.',
         type: 'experience',
         weight: 15,
-        effect: (player, grid) => {
+        effect: ({ player }) => {
             player.currentHp = Math.min(player.maxHp, player.currentHp + 20);
             console.log('Effect: Recovery (+20 HP)');
         }
@@ -151,7 +155,7 @@ export const UPGRADES: Upgrade[] = [
         description: 'Reduce Experience needed for next level by 10%.',
         type: 'experience',
         weight: 10,
-        effect: (player, grid) => {
+        effect: () => {
             // TODO: Implement max experience modification
             console.log('Effect: Fast Learner (Not implemented)');
         }
@@ -162,7 +166,7 @@ export const UPGRADES: Upgrade[] = [
         description: 'If HP drops to 0, survive with 1 HP (Once per game).',
         type: 'experience',
         weight: 5,
-        effect: (player, grid) => {
+        effect: () => {
             // TODO: Implement revive logic
             console.log('Effect: Second Wind (Not implemented)');
         }

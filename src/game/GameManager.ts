@@ -3,7 +3,6 @@ import { InputHandler } from './InputHandler';
 import { Tile, TileType } from './Tile';
 import { Player } from './Player';
 import { UpgradeManager } from './UpgradeManager';
-import { type Skill, SkillRegistry } from './Skill';
 
 export class GameManager {
     container: HTMLElement;

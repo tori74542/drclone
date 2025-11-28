@@ -79,7 +79,7 @@ export class UpgradeManager {
         console.log(`Selected upgrade: ${selectedUpgrade.name}`);
 
         if (selectedUpgrade.effect && this.currentPlayer && this.currentGrid) {
-            selectedUpgrade.effect(this.currentPlayer, this.currentGrid);
+            selectedUpgrade.effect({ player: this.currentPlayer, grid: this.currentGrid });
         }
 
         this.overlay.classList.remove('visible');

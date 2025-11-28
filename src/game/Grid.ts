@@ -1,4 +1,4 @@
-import { Tile, TileType } from './Tile';
+import { Tile } from './Tile';
 
 export class Grid {
     width: number;

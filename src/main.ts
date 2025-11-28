@@ -5,4 +5,4 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div id="game-root"></div>
 `
 
-const gameManager = new GameManager('game-root');
+new GameManager('game-root');
