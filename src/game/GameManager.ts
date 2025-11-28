@@ -188,29 +188,32 @@ export class GameManager {
         window.addEventListener('mouseup', () => this.inputHandler.endDrag());
 
         // Touch Events
-        gridEl.addEventListener('touchstart', (e) => this.handleInputStart(e));
-        window.addEventListener('touchmove', (e) => this.handleInputMove(e));
+        gridEl.addEventListener('touchstart', (e) => this.handleInputStart(e), { passive: false });
+        window.addEventListener('touchmove', (e) => this.handleInputMove(e), { passive: false });
         window.addEventListener('touchend', () => this.inputHandler.endDrag());
     }
 
     getTileFromEvent(e: MouseEvent | TouchEvent): Tile | null {
-        const target = e.target as HTMLElement;
-        const tileEl = target.closest('.tile') as HTMLElement;
-        if (!tileEl) {
-            // Handle touch move which might be over an element but target is where it started
-            if (e instanceof TouchEvent) {
-                const touch = e.touches[0];
-                const el = document.elementFromPoint(touch.clientX, touch.clientY);
-                if (el) {
-                    const t = el.closest('.tile') as HTMLElement;
-                    if (t && t.dataset.id) {
-                        return this.findTileById(t.dataset.id);
-                    }
+        if (e instanceof TouchEvent) {
+            const touch = e.touches[0];
+            // For touch events, e.target is always the starting element, so we must use elementFromPoint
+            // to find the element under the finger during a drag.
+            const el = document.elementFromPoint(touch.clientX, touch.clientY);
+            if (el) {
+                const t = el.closest('.tile') as HTMLElement;
+                if (t && t.dataset.id) {
+                    return this.findTileById(t.dataset.id);
                 }
             }
             return null;
         }
-        return this.findTileById(tileEl.dataset.id!);
+
+        const target = e.target as HTMLElement;
+        const tileEl = target.closest('.tile') as HTMLElement;
+        if (tileEl) {
+            return this.findTileById(tileEl.dataset.id!);
+        }
+        return null;
     }
 
     findTileById(id: string): Tile | null {
@@ -225,7 +228,9 @@ export class GameManager {
 
     handleInputStart(e: MouseEvent | TouchEvent) {
         if (this.isProcessing || this.isGameOver) return; // Block input
-        e.preventDefault(); // Prevent scroll
+        if (e.cancelable && e instanceof TouchEvent) {
+            e.preventDefault(); // Prevent scroll on start too if needed, but mainly move
+        }
         const tile = this.getTileFromEvent(e);
         if (tile) {
             this.inputHandler.startDrag(tile);
@@ -234,6 +239,12 @@ export class GameManager {
 
     handleInputMove(e: MouseEvent | TouchEvent) {
         if (this.isProcessing || this.isGameOver) return; // Block input
+
+        // Prevent default to stop scrolling on touch devices
+        if (e instanceof TouchEvent && e.cancelable) {
+            e.preventDefault();
+        }
+
         const tile = this.getTileFromEvent(e);
         if (tile) {
             this.inputHandler.continueDrag(tile);
