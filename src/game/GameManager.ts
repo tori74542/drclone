@@ -249,6 +249,36 @@ export class GameManager {
             defBarFill.style.width = `${defPercent}%`;
             defBarText.textContent = `${this.player.currentDefense}/${this.player.maxDefense}`;
         }
+
+        // Update Coin Bar
+        const coinBarFill = document.getElementById('coin-bar-fill');
+        const coinBarText = document.getElementById('coin-bar-text');
+
+        if (coinBarFill && coinBarText) {
+            const coinPercent = Math.max(0, (this.player.coins / this.player.maxCoins) * 100);
+            coinBarFill.style.width = `${coinPercent}%`;
+            coinBarText.textContent = `${this.player.coins}/${this.player.maxCoins}`;
+        }
+
+        // Update Equipment Bar
+        const eqBarFill = document.getElementById('eq-bar-fill');
+        const eqBarText = document.getElementById('eq-bar-text');
+
+        if (eqBarFill && eqBarText) {
+            const eqPercent = Math.max(0, (this.player.equipmentPoints / this.player.maxEquipmentPoints) * 100);
+            eqBarFill.style.width = `${eqPercent}%`;
+            eqBarText.textContent = `${this.player.equipmentPoints}/${this.player.maxEquipmentPoints}`;
+        }
+
+        // Update Experience Bar
+        const expBarFill = document.getElementById('exp-bar-fill');
+        const expBarText = document.getElementById('exp-bar-text');
+
+        if (expBarFill && expBarText) {
+            const expPercent = Math.max(0, (this.player.experience / this.player.maxExperience) * 100);
+            expBarFill.style.width = `${expPercent}%`;
+            expBarText.textContent = `${this.player.experience}/${this.player.maxExperience}`;
+        }
     }
 
     setupInputListeners(gridEl: HTMLElement) {
