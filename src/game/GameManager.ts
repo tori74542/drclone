@@ -18,8 +18,8 @@ export class GameManager {
     upgradeManager: UpgradeManager;
     upgradeQueue: ('coin' | 'equipment' | 'experience')[] = [];
 
-
-
+    tileSize: number = 60;
+    gapSize: number = 8;
 
     constructor(containerId: string) {
         const el = document.getElementById(containerId);
@@ -103,6 +103,56 @@ export class GameManager {
         this.setupInputListeners(gridEl);
         this.updatePlayerUI();
         this.renderSkillUI();
+
+        // Handle resize
+        window.addEventListener('resize', () => {
+            this.calculateDimensions();
+            this.renderGrid();
+        });
+
+        // Initial calculation
+        this.calculateDimensions();
+        this.renderGrid(); // Re-render with correct dimensions
+    }
+
+    calculateDimensions() {
+        const gridEl = document.getElementById('grid');
+        if (!gridEl) return;
+
+        // Get available width
+        // We need to account for padding of the game-container if we measure that, 
+        // or just measure the grid's parent width and subtract padding.
+        // Let's measure the game-container width.
+        const container = this.container.querySelector('.game-container') as HTMLElement;
+        if (!container) return;
+
+        const containerWidth = container.clientWidth;
+        const padding = 20 * 2; // 20px padding on each side of game-container
+        const availableWidth = containerWidth - padding;
+
+        // On mobile, we want to fill the width.
+        // On desktop, we want to cap it at 60px * 6 + gaps.
+
+        // Calculate max possible tile size based on width
+        // Width = (tileSize * 6) + (gapSize * 5) + (gapSize * 2 for grid padding)
+        // Width = 6*tileSize + 7*gapSize
+        // tileSize = (Width - 7*gapSize) / 6
+
+        // We can keep gapSize fixed or scale it. Let's scale it slightly for very small screens?
+        // For now, keep gap fixed at 8px unless very small.
+        this.gapSize = 8;
+        if (availableWidth < 400) {
+            this.gapSize = 4;
+        }
+
+        const calculatedTileSize = (availableWidth - (this.gapSize * 7)) / 6;
+
+        // Cap at 60px
+        this.tileSize = Math.min(60, Math.floor(calculatedTileSize));
+
+        // Update CSS variables
+        document.documentElement.style.setProperty('--tile-size', `${this.tileSize}px`);
+        document.documentElement.style.setProperty('--gap-size', `${this.gapSize}px`);
     }
 
     activateSkill(index: number) {
@@ -329,8 +379,9 @@ export class GameManager {
 
     renderGrid() {
         const gridEl = document.getElementById('grid')!;
-        const tileSize = 60;
-        const gapSize = 8;
+        // Use dynamic values
+        const tileSize = this.tileSize;
+        const gapSize = this.gapSize;
 
         // Track existing elements to remove dead ones
         const existingIds = new Set<string>();

@@ -14,6 +14,7 @@
   --gap-size: 8px;
 }
 
+
 * {
   box-sizing: border-box;
   user-select: none;
@@ -46,6 +47,17 @@ body {
   background: #111;
   border-radius: 12px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+@media (max-width: 480px) {
+  .game-container {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 20px;
+    /* Explicitly keep padding */
+    border-radius: 0;
+    /* Optional: remove radius on full width */
+  }
 }
 
 .grid {
@@ -240,6 +252,12 @@ body {
   max-width: 416px;
   /* Match grid width (6*60 + 5*8 + 2*8 padding) */
   box-sizing: border-box;
+}
+
+@media (max-width: 480px) {
+  .player-stats {
+    max-width: 95%;
+  }
 }
 
 .stats-row {
@@ -522,6 +540,12 @@ body {
   /* Match game-container width */
   margin-left: auto;
   margin-right: auto;
+}
+
+@media (max-width: 480px) {
+  .skill-container {
+    width: 95%;
+  }
 }
 
 .skill-slot {
