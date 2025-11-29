@@ -239,6 +239,16 @@ export class GameManager {
             hpBarFill.style.width = `${hpPercent}%`;
             hpBarText.textContent = `${this.player.currentHp}/${this.player.maxHp}`;
         }
+
+        // Update Defense Bar
+        const defBarFill = document.getElementById('def-bar-fill');
+        const defBarText = document.getElementById('def-bar-text');
+
+        if (defBarFill && defBarText) {
+            const defPercent = Math.max(0, (this.player.currentDefense / this.player.maxDefense) * 100);
+            defBarFill.style.width = `${defPercent}%`;
+            defBarText.textContent = `${this.player.currentDefense}/${this.player.maxDefense}`;
+        }
     }
 
     setupInputListeners(gridEl: HTMLElement) {
