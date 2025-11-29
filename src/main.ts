@@ -1,8 +1,6 @@
 import './style.css'
 import { GameManager } from './game/GameManager'
 
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-  <div id="game-root"></div>
-`
+// HTML structure is now in index.html
 
 new GameManager('game-root');

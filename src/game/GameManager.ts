@@ -205,7 +205,6 @@ export class GameManager {
         this.upgradeManager.showUpgradeSelection(type, this.player, this.grid, () => {
             this.updatePlayerUI();
             this.renderSkillUI();
-            // Slight delay before next one to feel natural
             setTimeout(() => {
                 this.processUpgradeQueue();
             }, 100);
@@ -230,6 +229,16 @@ export class GameManager {
         if (expEl) expEl.textContent = `${this.player.experience}`;
         if (scoreEl) scoreEl.textContent = `${this.player.score}`;
         if (highScoreEl) highScoreEl.textContent = `${this.player.highScore}`;
+
+        // Update new HP Bar
+        const hpBarFill = document.getElementById('hp-bar-fill');
+        const hpBarText = document.getElementById('hp-bar-text');
+
+        if (hpBarFill && hpBarText) {
+            const hpPercent = Math.max(0, (this.player.currentHp / this.player.maxHp) * 100);
+            hpBarFill.style.width = `${hpPercent}%`;
+            hpBarText.textContent = `${this.player.currentHp}/${this.player.maxHp}`;
+        }
     }
 
     setupInputListeners(gridEl: HTMLElement) {
