@@ -126,7 +126,8 @@ export class GameManager {
         const container = this.container.querySelector('.game-container') as HTMLElement;
         if (!container) return;
 
-        const containerWidth = container.clientWidth;
+        // Use window.innerWidth as a hard cap to prevent overflow if container is already too wide
+        const containerWidth = Math.min(container.clientWidth, window.innerWidth);
         const padding = 20 * 2; // 20px padding on each side of game-container
         const availableWidth = containerWidth - padding;
 

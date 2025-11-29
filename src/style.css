@@ -31,7 +31,10 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
+  height: 100vh;
   overflow: hidden;
+  /* This handles both x and y, but mostly we want to avoid scroll on body */
+  width: 100%;
 }
 
 #app {
@@ -39,6 +42,8 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 20px;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 .game-container {
@@ -47,6 +52,8 @@ body {
   background: #111;
   border-radius: 12px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  max-width: 100vw;
+  box-sizing: border-box;
 }
 
 @media (max-width: 480px) {
