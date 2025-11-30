@@ -44,20 +44,6 @@ export class GameManager {
         <div id="damage-indicator"></div>
       </div>
       <div id="skill-container" class="skill-container"></div>
-      <div class="player-stats" id="player-stats">
-        <div class="stats-row">
-        </div>
-        <div class="stats-row">
-            <div class="stat-item score">
-                <span class="label">SCORE</span>
-                <span class="value" id="player-score">${this.player.score}</span>
-            </div>
-             <div class="stat-item high-score">
-                <span class="label">HIGH</span>
-                <span class="value" id="player-high-score">${this.player.highScore}</span>
-            </div>
-        </div>
-      </div>
     `;
 
         const gridEl = document.getElementById('grid')!;

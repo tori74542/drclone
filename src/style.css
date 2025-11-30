@@ -242,70 +242,37 @@ body {
   text-align: right;
 }
 
-/* Player Stats UI */
-.player-stats {
+/* Top Score Bar */
+.top-score-bar {
   display: flex;
-  flex-direction: column;
-  /* Stack rows */
-  gap: 10px;
-  background: #2c3e50;
-  padding: 10px;
-  border-radius: 8px;
-  margin: 10px auto;
-  /* Center horizontally */
-  color: white;
-  font-family: 'Inter', sans-serif;
-  width: 100%;
-  max-width: 416px;
-  /* Match grid width (6*60 + 5*8 + 2*8 padding) */
-  box-sizing: border-box;
-}
-
-@media (max-width: 480px) {
-  .player-stats {
-    max-width: 95%;
-  }
-}
-
-.stats-row {
-  display: flex;
-  justify-content: space-around;
-  width: 100%;
-}
-
-.stat-item {
-  display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  min-width: 60px;
-  /* Ensure consistent spacing */
-}
-
-.stat-item .label {
-  font-size: 10px;
-  /* Slightly smaller label */
-  color: #95a5a6;
-  margin-bottom: 2px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.stat-item .value {
-  font-size: 16px;
-  /* Slightly smaller value */
+  gap: 20px;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto 5px auto;
+  font-family: 'Inter', sans-serif;
+  color: white;
   font-weight: bold;
+  font-size: 14px;
 }
 
+.top-score-bar .label {
+  color: #95a5a6;
+  font-size: 12px;
+  margin-right: 5px;
+}
 
+.top-score-bar .value {
+  color: #fff;
+}
 
-.stat-item.score .value {
+.top-score-bar #player-score {
   color: #f39c12;
-  /* Orange */
 }
 
-.stat-item.high-score .value {
+.top-score-bar #player-high-score {
   color: #9b59b6;
-  /* Purple */
 }
 
 /* Game Over Overlay */
