@@ -47,21 +47,22 @@ export class Tile {
 
   getIcon(): string {
     let svg = '';
+    const baseUrl = import.meta.env.BASE_URL;
     switch (this.type) {
       case TileType.Sword:
-        svg = '<img src="/sword.svg" class="tile-icon" />';
+        svg = `<img src="${baseUrl}sword.svg" class="tile-icon" />`;
         break;
       case TileType.Shield:
-        svg = '<img src="/shield.svg" class="tile-icon" />';
+        svg = `<img src="${baseUrl}shield.svg" class="tile-icon" />`;
         break;
       case TileType.Potion:
-        svg = '<img src="/potion.svg" class="tile-icon" />';
+        svg = `<img src="${baseUrl}potion.svg" class="tile-icon" />`;
         break;
       case TileType.Coin:
-        svg = '<img src="/coin.svg" class="tile-icon" />';
+        svg = `<img src="${baseUrl}coin.svg" class="tile-icon" />`;
         break;
       case TileType.Enemy:
-        svg = '<img src="/enemy.svg" class="tile-icon" />';
+        svg = `<img src="${baseUrl}enemy.svg" class="tile-icon" />`;
         break;
       default:
         svg = '';
