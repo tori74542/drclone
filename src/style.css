@@ -98,10 +98,17 @@ body {
   left: 0;
 }
 
-.tile svg {
+.tile svg,
+.tile img {
   width: 60%;
   height: 60%;
   fill: currentColor;
+  /* For SVGs */
+  object-fit: contain;
+  /* For Images */
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .tile.sword {
