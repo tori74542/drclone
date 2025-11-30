@@ -296,33 +296,7 @@ body {
   font-weight: bold;
 }
 
-.stat-item.hp .value {
-  color: #e74c3c;
-}
 
-.stat-item.defense .value {
-  color: #3498db;
-}
-
-.stat-item.attack .value {
-  color: #ffffff;
-  /* White for Attack */
-}
-
-.stat-item.coins .value {
-  color: #f1c40f;
-  /* Yellow */
-}
-
-.stat-item.equipment .value {
-  color: #3498db;
-  /* Blue */
-}
-
-.stat-item.exp .value {
-  color: #ffffff;
-  /* White */
-}
 
 .stat-item.score .value {
   color: #f39c12;

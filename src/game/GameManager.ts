@@ -46,33 +46,6 @@ export class GameManager {
       <div id="skill-container" class="skill-container"></div>
       <div class="player-stats" id="player-stats">
         <div class="stats-row">
-            <div class="stat-item hp">
-                <span class="label">HP</span>
-                <span class="value" id="player-hp">${this.player.currentHp}/${this.player.maxHp}</span>
-            </div>
-            <div class="stat-item defense">
-                <span class="label">DEF</span>
-                <span class="value" id="player-defense">${this.player.currentDefense}/${this.player.maxDefense}</span>
-            </div>
-            <div class="stat-item attack">
-                <span class="label">ATK</span>
-                <span class="value" id="player-attack">${this.player.baseAttack}</span>
-            </div>
-        </div>
-        <div class="stats-row">
-            <div class="stat-item coins">
-                <span class="label">COIN</span>
-                <span class="value" id="player-coins">${this.player.coins}</span>
-            </div>
-            <div class="stat-item equipment">
-                <span class="label">EQ</span>
-                <span class="value" id="player-equipment">${this.player.equipmentPoints}</span>
-            </div>
-            <div class="stat-item exp">
-                <span class="label">EXP</span>
-                <span class="value" id="player-exp">${this.player.experience}</span>
-            </div>
-        </div>
         </div>
         <div class="stats-row">
             <div class="stat-item score">
@@ -212,21 +185,9 @@ export class GameManager {
     }
 
     updatePlayerUI() {
-        const hpEl = document.getElementById('player-hp');
-        const defEl = document.getElementById('player-defense');
-        const atkEl = document.getElementById('player-attack');
-        const coinsEl = document.getElementById('player-coins');
-        const eqEl = document.getElementById('player-equipment');
-        const expEl = document.getElementById('player-exp');
         const scoreEl = document.getElementById('player-score');
         const highScoreEl = document.getElementById('player-high-score');
 
-        if (hpEl) hpEl.textContent = `${this.player.currentHp}/${this.player.maxHp}`;
-        if (defEl) defEl.textContent = `${this.player.currentDefense}/${this.player.maxDefense}`;
-        if (atkEl) atkEl.textContent = `${this.player.baseAttack}`;
-        if (coinsEl) coinsEl.textContent = `${this.player.coins}`;
-        if (eqEl) eqEl.textContent = `${this.player.equipmentPoints}`;
-        if (expEl) expEl.textContent = `${this.player.experience}`;
         if (scoreEl) scoreEl.textContent = `${this.player.score}`;
         if (highScoreEl) highScoreEl.textContent = `${this.player.highScore}`;
 
